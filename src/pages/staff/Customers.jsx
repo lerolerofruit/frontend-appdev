@@ -8,6 +8,18 @@ const emptyForm = {
   vehicle: { vehicleNumber: '', make: '', model: '', year: new Date().getFullYear(), vin: '', mileage: 0 }
 };
 
+const normalizeCustomerDetails = (data) => {
+  const customer = data?.customer ?? data?.data?.customer ?? data;
+  if (!customer) return null;
+
+  return {
+    ...customer,
+    totalSpend: data?.totalSpend ?? customer.totalSpend ?? 0,
+    outstandingCredit: data?.outstandingCredit ?? customer.outstandingCredit ?? 0,
+    vehicles: data?.vehicles ?? customer.vehicles ?? [],
+  };
+};
+
 export default function StaffCustomers() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -15,6 +27,8 @@ export default function StaffCustomers() {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [detail, setDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,8 +53,26 @@ export default function StaffCustomers() {
   };
 
   const viewDetail = async (id) => {
-    const r = await getCustomerDetails(id);
-    setDetail(r.data); setModal('detail');
+    const customerId = id ?? null;
+    setDetail(null);
+    setDetailError('');
+    setDetailLoading(true);
+    setModal('detail');
+
+    if (!customerId) {
+      setDetailLoading(false);
+      setDetailError('Unable to open customer details because the customer ID is missing.');
+      return;
+    }
+
+    try {
+      const r = await getCustomerDetails(customerId);
+      setDetail(normalizeCustomerDetails(r.data));
+    } catch (err) {
+      setDetailError(err.response?.data?.message || 'Failed to load customer details.');
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   return (
@@ -84,7 +116,7 @@ export default function StaffCustomers() {
                     <td className="td">{c.email}</td>
                     <td className="td">{c.phoneNumber || '—'}</td>
                     <td className="td">
-                      <button onClick={() => viewDetail(c.id)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Eye size={14} className="text-gray-500" /></button>
+                      <button type="button" onClick={() => viewDetail(c.id ?? c.customerId ?? c._id)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Eye size={14} className="text-gray-500" /></button>
                     </td>
                   </tr>
                 ))}
@@ -126,36 +158,42 @@ export default function StaffCustomers() {
         </Modal>
       )}
 
-      {modal === 'detail' && detail && (
+      {modal === 'detail' && (
         <Modal title="Customer Details" onClose={() => setModal(null)} size="lg">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-lg font-bold text-emerald-600">{detail.fullName?.[0]?.toUpperCase()}</div>
-              <div>
-                <p className="font-semibold text-gray-900">{detail.fullName}</p>
-                <p className="text-sm text-gray-500">{detail.email}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Phone:</span> <span className="font-medium ml-1">{detail.phoneNumber || '—'}</span></div>
-              <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Total Spend:</span> <span className="font-semibold ml-1 text-gray-900">Rs. {detail.totalSpend?.toLocaleString()}</span></div>
-              <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Outstanding Credit:</span> <span className={`font-semibold ml-1 ${detail.outstandingCredit > 0 ? 'text-amber-600' : 'text-gray-900'}`}>Rs. {detail.outstandingCredit?.toLocaleString()}</span></div>
-            </div>
-            {detail.vehicles?.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Vehicles</p>
-                <div className="space-y-2">
-                  {detail.vehicles.map(v => (
-                    <div key={v.id} className="bg-gray-50 rounded-xl p-3 text-sm">
-                      <span className="font-medium text-gray-900">{v.make} {v.model} {v.year}</span>
-                      <span className="ml-2 font-mono text-xs text-gray-500">{v.vehicleNumber}</span>
-                      <span className="ml-2 text-gray-400">{v.mileage?.toLocaleString()} km</span>
-                    </div>
-                  ))}
+          {detailLoading ? (
+            <div className="py-8 text-center text-sm text-gray-500">Loading customer details…</div>
+          ) : detailError ? (
+            <div className="rounded-xl bg-red-50 p-4 text-sm text-red-600">{detailError}</div>
+          ) : detail ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-lg font-bold text-emerald-600">{detail.fullName?.[0]?.toUpperCase()}</div>
+                <div>
+                  <p className="font-semibold text-gray-900">{detail.fullName}</p>
+                  <p className="text-sm text-gray-500">{detail.email}</p>
                 </div>
               </div>
-            )}
-          </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Phone:</span> <span className="font-medium ml-1">{detail.phoneNumber || '—'}</span></div>
+                <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Total Spend:</span> <span className="font-semibold ml-1 text-gray-900">Rs. {Number(detail.totalSpend || 0).toLocaleString()}</span></div>
+                <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Outstanding Credit:</span> <span className={`font-semibold ml-1 ${detail.outstandingCredit > 0 ? 'text-amber-600' : 'text-gray-900'}`}>Rs. {Number(detail.outstandingCredit || 0).toLocaleString()}</span></div>
+              </div>
+              {detail.vehicles?.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Vehicles</p>
+                  <div className="space-y-2">
+                    {detail.vehicles.map(v => (
+                      <div key={v.id ?? `${v.vehicleNumber}-${v.make}-${v.model}`} className="bg-gray-50 rounded-xl p-3 text-sm">
+                        <span className="font-medium text-gray-900">{v.make} {v.model} {v.year}</span>
+                        <span className="ml-2 font-mono text-xs text-gray-500">{v.vehicleNumber}</span>
+                        <span className="ml-2 text-gray-400">{v.mileage?.toLocaleString()} km</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
         </Modal>
       )}
     </div>
