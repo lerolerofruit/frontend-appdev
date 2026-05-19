@@ -17,6 +17,7 @@ const adminLinks = [
 const staffLinks = [
   { to: '/staff', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/staff/customers', label: 'Customers', icon: Users },
+  { to: '/staff/customer-reports', label: 'Customer Reports', icon: BarChart3 },
   { to: '/staff/sales-invoices', label: 'Sales Invoices', icon: FileText },
   { to: '/staff/part-requests', label: 'Part Requests', icon: Inbox },
 ];
