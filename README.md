@@ -1,22 +1,18 @@
-# React + Vite
+# JournalApp Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for the Vehicle Parts Selling & Inventory Management System (Milestone 1).
 
-Currently, two official plugins are available:
+Quick start:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Install dependencies: `npm install`
+- Run dev server: `npm run dev` (opens at http://localhost:4200)
 
-## React Compiler
+Backend API:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- See `../backend-appdev` and run:
 
-## Expanding the ESLint configuration
+```bash
+dotnet run --project "../backend-appdev/IMS(API).csproj"
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
----
-
-Project Description: Frontend
-
-Summary: Frontend Code for our group project — Vehicle Parts Selling and Inventory Management System (Milestone 1)
+That's it — the frontend talks to the API at `http://localhost:5144` by default.
