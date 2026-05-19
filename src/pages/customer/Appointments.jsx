@@ -30,7 +30,11 @@ export default function Appointments() {
   const handleBook = async (e) => {
     e.preventDefault(); setSaving(true); setError('');
     try {
-      await bookAppointment({ vehicleId: form.vehicleId, appointmentDate: form.appointmentDate, serviceType: form.serviceType, notes: form.notes || null });
+      // Convert appointment date to UTC format
+      const appointmentDate = new Date(form.appointmentDate);
+      const utcDate = new Date(appointmentDate.getTime() - appointmentDate.getTimezoneOffset() * 60000).toISOString();
+      
+      await bookAppointment({ vehicleId: form.vehicleId, appointmentDate: utcDate, serviceType: form.serviceType, notes: form.notes || null });
       await load(); setModal(false); setForm({ vehicleId: '', appointmentDate: '', serviceType: '', notes: '' });
     } catch (err) { setError(err.response?.data?.message || 'Failed to book appointment.'); }
     finally { setSaving(false); }

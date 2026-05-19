@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { createPartRequest, getMyPartRequests } from '../../api/partRequests';
-import { getVehicles } from '../../api/customers';
 import Modal from '../../components/Modal';
 import EmptyState from '../../components/EmptyState';
 import { Plus, Package, AlertCircle } from 'lucide-react';
 
-const empty = { partName: '', vehicleId: '', description: '' };
+const empty = { requestedPartName: '', requestedPartNumber: '', quantity: 1 };
 
 export default function PartRequests() {
   const [requests, setRequests] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(empty);
@@ -19,9 +17,8 @@ export default function PartRequests() {
   const load = async () => {
     setLoading(true);
     try {
-      const [r, v] = await Promise.all([getMyPartRequests(), getVehicles()]);
+      const r = await getMyPartRequests();
       setRequests(r.data);
-      setVehicles(v.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load part requests.');
     } finally {
@@ -45,9 +42,9 @@ export default function PartRequests() {
     setError('');
     try {
       const payload = {
-        partName: form.partName,
-        vehicleId: form.vehicleId || null,
-        description: form.description || null,
+        requestedPartName: form.requestedPartName,
+        requestedPartNumber: form.requestedPartNumber || null,
+        quantity: form.quantity || 1,
       };
       await createPartRequest(payload);
       await load();
@@ -68,11 +65,6 @@ export default function PartRequests() {
     return badges[status] || <span className="badge-gray">{status}</span>;
   };
 
-  const getVehicleName = (vehicleId) => {
-    if (!vehicleId) return '—';
-    const vehicle = vehicles.find(v => v.id === vehicleId);
-    return vehicle ? `${vehicle.make} ${vehicle.model} (${vehicle.vehicleNumber})` : '—';
-  };
 
   return (
     <div>
@@ -103,20 +95,18 @@ export default function PartRequests() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <Package size={18} className="text-violet-500 flex-shrink-0" />
-                      <h3 className="font-semibold text-slate-900">{req.partName}</h3>
+                        <h3 className="font-semibold text-slate-900">{req.requestedPartName}</h3>
                     </div>
-                    {req.vehicleId && (
+                    {req.requestedPartNumber && (
                       <p className="text-sm text-slate-600 mb-2">
-                        <span className="text-slate-500">Vehicle:</span> {getVehicleName(req.vehicleId)}
+                        <span className="text-slate-500">Part #:</span> {req.requestedPartNumber}
                       </p>
                     )}
-                    {req.description && (
-                      <p className="text-sm text-slate-600 mb-2">
-                        <span className="text-slate-500">Description:</span> {req.description}
-                      </p>
-                    )}
+                    <p className="text-sm text-slate-600 mb-2">
+                      <span className="text-slate-500">Qty:</span> {req.quantity}
+                    </p>
                     <p className="text-xs text-slate-400">
-                      Requested on {new Date(req.requestDate).toLocaleDateString()}
+                      Requested on {new Date(req.requestedOn).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex-shrink-0">{getStatusBadge(req.status)}</div>
@@ -138,38 +128,32 @@ export default function PartRequests() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="label">Part Name *</label>
-              <input
-                className="input"
-                required
-                value={form.partName}
-                onChange={e => setForm({ ...form, partName: e.target.value })}
+                <input
+                  className="input"
+                  required
+                  value={form.requestedPartName}
+                  onChange={e => setForm({ ...form, requestedPartName: e.target.value })}
                 placeholder="e.g., Brake Pad Set, Air Filter"
               />
             </div>
-            <div>
-              <label className="label">Vehicle (Optional)</label>
-              <select
-                className="input"
-                value={form.vehicleId}
-                onChange={e => setForm({ ...form, vehicleId: e.target.value })}
-              >
-                <option value="">Select a vehicle</option>
-                {vehicles.map(v => (
-                  <option key={v.id} value={v.id}>
-                    {v.make} {v.model} ({v.vehicleNumber})
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label">Description (Optional)</label>
-              <textarea
-                className="input"
-                value={form.description}
-                onChange={e => setForm({ ...form, description: e.target.value })}
-                placeholder="e.g., Why do you need this part? Any specific requirements?"
-                rows={4}
-              />
+              <div>
+                <label className="label">Quantity</label>
+                <input
+                  type="number"
+                  className="input"
+                  min="1"
+                  value={form.quantity}
+                  onChange={e => setForm({ ...form, quantity: parseInt(e.target.value) || 1 })}
+                />
+              </div>
+              <div>
+                <label className="label">Part Number (Optional)</label>
+                <input
+                  className="input"
+                  value={form.requestedPartNumber}
+                  onChange={e => setForm({ ...form, requestedPartNumber: e.target.value })}
+                  placeholder="e.g., BP-2024-001"
+                />
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button type="button" onClick={() => setModal(false)} className="btn-secondary">

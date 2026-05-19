@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Package, Building2, FileText, Users,
-  Calendar, LogOut, Wrench, BarChart3, AlertSquare
+  Calendar, LogOut, Wrench, BarChart3, Inbox
 } from 'lucide-react';
 
 const adminLinks = [
@@ -12,19 +12,19 @@ const adminLinks = [
   { to: '/admin/purchase-invoices', label: 'Purchase Invoices', icon: FileText },
   { to: '/admin/staff', label: 'Staff', icon: Users },
   { to: '/admin/financial-reports', label: 'Financial Reports', icon: BarChart3 },
-  { to: '/admin/part-requests', label: 'Part Requests', icon: AlertSquare },
+  { to: '/admin/part-requests', label: 'Part Requests', icon: Inbox },
 ];
 const staffLinks = [
   { to: '/staff', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/staff/customers', label: 'Customers', icon: Users },
   { to: '/staff/sales-invoices', label: 'Sales Invoices', icon: FileText },
-  { to: '/staff/part-requests', label: 'Part Requests', icon: AlertSquare },
+  { to: '/staff/part-requests', label: 'Part Requests', icon: Inbox },
 ];
 const customerLinks = [
   { to: '/customer', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/customer/vehicles', label: 'My Vehicles', icon: Wrench },
   { to: '/customer/appointments', label: 'Appointments', icon: Calendar },
-  { to: '/customer/part-requests', label: 'Request Parts', icon: AlertSquare },
+  { to: '/customer/part-requests', label: 'Request Parts', icon: Inbox },
 ];
 const roleLinks = { Admin: adminLinks, Staff: staffLinks, Customer: customerLinks };
 
