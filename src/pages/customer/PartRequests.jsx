@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
-import { createPartRequest, getMyPartRequests } from '../../api/partRequests';
+import { createPartRequest, getMyPartRequests, deletePartRequest } from '../../api/partRequests';
 import Modal from '../../components/Modal';
 import EmptyState from '../../components/EmptyState';
-import { Plus, Package, AlertCircle } from 'lucide-react';
+import { Plus, Package, AlertCircle, Trash2 } from 'lucide-react';
 
 const empty = { requestedPartName: '', requestedPartNumber: '', quantity: 1 };
+
+const normalizeRequests = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.$values)) return data.$values;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+};
 
 export default function PartRequests() {
   const [requests, setRequests] = useState([]);
@@ -12,15 +20,17 @@ export default function PartRequests() {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
 
   const load = async () => {
     setLoading(true);
     try {
       const r = await getMyPartRequests();
-      setRequests(r.data);
+      setRequests(normalizeRequests(r.data));
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load part requests.');
+      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -42,8 +52,8 @@ export default function PartRequests() {
     setError('');
     try {
       const payload = {
-        requestedPartName: form.requestedPartName,
-        requestedPartNumber: form.requestedPartNumber || null,
+        requestedPartName: form.requestedPartName.trim(),
+        requestedPartNumber: form.requestedPartNumber.trim(),
         quantity: form.quantity || 1,
       };
       await createPartRequest(payload);
@@ -59,10 +69,27 @@ export default function PartRequests() {
   const getStatusBadge = (status) => {
     const badges = {
       Pending: <span className="badge-yellow">Pending</span>,
-      Reviewed: <span className="badge-blue">Reviewed</span>,
+      Approved: <span className="badge-blue">Approved</span>,
+      Rejected: <span className="badge-red">Rejected</span>,
       Fulfilled: <span className="badge-green">Fulfilled</span>,
     };
     return badges[status] || <span className="badge-gray">{status}</span>;
+  };
+
+  const handleDelete = async (id) => {
+    const ok = window.confirm('Remove this part request? This cannot be undone.');
+    if (!ok) return;
+
+    setDeleting(id);
+    setError('');
+    try {
+      await deletePartRequest(id);
+      await load();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to remove request.');
+    } finally {
+      setDeleting(null);
+    }
   };
 
 
@@ -106,10 +133,21 @@ export default function PartRequests() {
                       <span className="text-slate-500">Qty:</span> {req.quantity}
                     </p>
                     <p className="text-xs text-slate-400">
-                      Requested on {new Date(req.requestedOn).toLocaleDateString()}
+                      Requested on {new Date(req.requestedOn || req.requestDate || Date.now()).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex-shrink-0">{getStatusBadge(req.status)}</div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-100 flex justify-end">
+                  <button
+                    type="button"
+                    className="btn-danger text-xs px-2 py-1"
+                    disabled={deleting === req.id}
+                    onClick={() => handleDelete(req.id)}
+                  >
+                    <Trash2 size={14} />
+                    {deleting === req.id ? 'Removing…' : 'Remove'}
+                  </button>
                 </div>
               </div>
             ))}
@@ -142,14 +180,16 @@ export default function PartRequests() {
                   type="number"
                   className="input"
                   min="1"
+                  required
                   value={form.quantity}
                   onChange={e => setForm({ ...form, quantity: parseInt(e.target.value) || 1 })}
                 />
               </div>
               <div>
-                <label className="label">Part Number (Optional)</label>
+                <label className="label">Part Number *</label>
                 <input
                   className="input"
+                  required
                   value={form.requestedPartNumber}
                   onChange={e => setForm({ ...form, requestedPartNumber: e.target.value })}
                   placeholder="e.g., BP-2024-001"

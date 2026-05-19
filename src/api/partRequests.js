@@ -13,5 +13,9 @@ export const getAllPartRequests = () => {
 };
 
 export const updatePartRequestStatus = (id, status) => {
-  return api.put(`/PartRequests/${id}`, { status });
+  return api.put(`/PartRequests/${id}/status`, { status });
+};
+
+export const deletePartRequest = (id) => {
+  return api.delete(`/PartRequests/${id}`);
 };
