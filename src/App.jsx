@@ -10,6 +10,7 @@ import Parts from './pages/admin/Parts';
 import Vendors from './pages/admin/Vendors';
 import PurchaseInvoices from './pages/admin/PurchaseInvoices';
 import Staff from './pages/admin/Staff';
+import FinancialReports from './pages/admin/FinancialReports';
 
 import StaffDashboard from './pages/staff/Dashboard';
 import Customers from './pages/staff/Customers';
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/admin/vendors" element={<ProtectedRoute roles={['Admin']}><Vendors /></ProtectedRoute>} />
           <Route path="/admin/purchase-invoices" element={<ProtectedRoute roles={['Admin']}><PurchaseInvoices /></ProtectedRoute>} />
           <Route path="/admin/staff" element={<ProtectedRoute roles={['Admin']}><Staff /></ProtectedRoute>} />
+          <Route path="/admin/financial-reports" element={<ProtectedRoute roles={['Admin']}><FinancialReports /></ProtectedRoute>} />
 
           <Route path="/staff" element={<ProtectedRoute roles={['Staff']}><StaffDashboard /></ProtectedRoute>} />
           <Route path="/staff/customers" element={<ProtectedRoute roles={['Staff']}><Customers /></ProtectedRoute>} />
