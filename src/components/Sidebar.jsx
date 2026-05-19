@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Package, Building2, FileText, Users,
-  Calendar, LogOut, Wrench, BarChart3, Inbox
+  Calendar, LogOut, Wrench, BarChart3, Inbox, Bell
 } from 'lucide-react';
 
 const adminLinks = [
@@ -12,6 +12,7 @@ const adminLinks = [
   { to: '/admin/purchase-invoices', label: 'Purchase Invoices', icon: FileText },
   { to: '/admin/staff', label: 'Staff', icon: Users },
   { to: '/admin/financial-reports', label: 'Financial Reports', icon: BarChart3 },
+  { to: '/admin/notifications', label: 'Notifications', icon: Bell },
   { to: '/admin/part-requests', label: 'Part Requests', icon: Inbox },
 ];
 const staffLinks = [

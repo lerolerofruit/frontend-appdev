@@ -12,6 +12,7 @@ import PurchaseInvoices from './pages/admin/PurchaseInvoices';
 import Staff from './pages/admin/Staff';
 import FinancialReports from './pages/admin/FinancialReports';
 import ManagePartRequests from './pages/admin/ManagePartRequests';
+import Notifications from './pages/admin/Notifications';
 
 import StaffDashboard from './pages/staff/Dashboard';
 import Customers from './pages/staff/Customers';
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/admin/purchase-invoices" element={<ProtectedRoute roles={['Admin']}><PurchaseInvoices /></ProtectedRoute>} />
           <Route path="/admin/staff" element={<ProtectedRoute roles={['Admin']}><Staff /></ProtectedRoute>} />
           <Route path="/admin/financial-reports" element={<ProtectedRoute roles={['Admin']}><FinancialReports /></ProtectedRoute>} />
+          <Route path="/admin/notifications" element={<ProtectedRoute roles={['Admin']}><Notifications /></ProtectedRoute>} />
           <Route path="/admin/part-requests" element={<ProtectedRoute roles={['Admin']}><ManagePartRequests /></ProtectedRoute>} />
 
           <Route path="/staff" element={<ProtectedRoute roles={['Staff']}><StaffDashboard /></ProtectedRoute>} />
