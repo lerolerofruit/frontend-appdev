@@ -16,6 +16,7 @@ import ManagePartRequests from './pages/admin/ManagePartRequests';
 import Notifications from './pages/admin/Notifications';
 
 import StaffDashboard from './pages/staff/Dashboard';
+import StaffAppointments from './pages/staff/Appointments';
 import Customers from './pages/staff/Customers';
 import SalesInvoices from './pages/staff/SalesInvoices';
 import CustomerReports from './pages/staff/CustomerReports';
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/admin/part-requests" element={<ProtectedRoute roles={['Admin']}><ManagePartRequests /></ProtectedRoute>} />
 
           <Route path="/staff" element={<ProtectedRoute roles={['Staff']}><StaffDashboard /></ProtectedRoute>} />
+          <Route path="/staff/appointments" element={<ProtectedRoute roles={['Staff']}><StaffAppointments /></ProtectedRoute>} />
           <Route path="/staff/customers" element={<ProtectedRoute roles={['Staff']}><Customers /></ProtectedRoute>} />
           <Route path="/staff/sales-invoices" element={<ProtectedRoute roles={['Staff']}><SalesInvoices /></ProtectedRoute>} />
           <Route path="/staff/customer-reports" element={<ProtectedRoute roles={['Staff']}><CustomerReports /></ProtectedRoute>} />
