@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getParts, createPart, updatePart, updatePartStatus, deletePart } from '../../api/parts';
+import { getParts, createPart, updatePart, updatePartStatus, addStock, deletePart } from '../../api/parts';
 import { getVendors } from '../../api/vendors';
 import Modal from '../../components/Modal';
 import EmptyState from '../../components/EmptyState';
@@ -16,6 +16,7 @@ export default function Parts() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
+  const [stockForm, setStockForm] = useState({ partId: null, partName: '', quantity: 1 });
 
   const load = async () => {
     setLoading(true);
@@ -33,6 +34,10 @@ export default function Parts() {
     setForm({ partNumber: p.partNumber, name: p.name, description: p.description || '', primaryVendorId: p.primaryVendorId || '', unitPrice: p.unitPrice, reorderLevel: p.reorderLevel, initialStockQuantity: p.stockQuantity, _id: p.id });
     setError(''); setModal('edit');
   };
+  const openAddStock = (p) => {
+    setStockForm({ partId: p.id, partName: p.name, quantity: 1 });
+    setError(''); setModal('addStock');
+  };
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -44,6 +49,15 @@ export default function Parts() {
       else await updatePart(form._id, payload);
       await load(); setModal(null);
     } catch (err) { setError(err.response?.data?.message || 'Failed to save.'); }
+    finally { setSaving(false); }
+  };
+
+  const handleAddStock = async (e) => {
+    e.preventDefault(); setSaving(true); setError('');
+    try {
+      await addStock(stockForm.partId, parseInt(stockForm.quantity));
+      await load(); setModal(null);
+    } catch (err) { setError(err.response?.data?.message || 'Failed to add stock.'); }
     finally { setSaving(false); }
   };
 
@@ -109,6 +123,9 @@ export default function Parts() {
                         <button onClick={() => openEdit(p)} className="p-1.5 hover:bg-gray-100 rounded-lg" title="Edit">
                           <Pencil size={14} className="text-gray-500" />
                         </button>
+                        <button onClick={() => openAddStock(p)} className="p-1.5 hover:bg-blue-50 rounded-lg" title="Add Stock">
+                          <Plus size={14} className="text-blue-500" />
+                        </button>
                         <button onClick={() => toggleStatus(p)} className="p-1.5 hover:bg-gray-100 rounded-lg" title="Toggle status">
                           {p.isActive ? <ToggleRight size={16} className="text-emerald-500" /> : <ToggleLeft size={16} className="text-gray-400" />}
                         </button>
@@ -169,6 +186,30 @@ export default function Parts() {
             <div className="flex justify-end gap-3 pt-2">
               <button type="button" onClick={() => setModal(null)} className="btn-secondary">Cancel</button>
               <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Saving…' : 'Save Part'}</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {modal === 'addStock' && (
+        <Modal title={`Add Stock - ${stockForm.partName}`} onClose={() => setModal(null)}>
+          {error && <div className="mb-4 p-3 bg-red-50 rounded-xl text-sm text-red-600">{error}</div>}
+          <form onSubmit={handleAddStock} className="space-y-4">
+            <div>
+              <label className="label">Quantity</label>
+              <input 
+                className="input" 
+                type="number" 
+                required 
+                min="1"
+                value={stockForm.quantity} 
+                onChange={(e) => setStockForm({ ...stockForm, quantity: e.target.value })} 
+                placeholder="0" 
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={() => setModal(null)} className="btn-secondary">Cancel</button>
+              <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Adding…' : 'Add Stock'}</button>
             </div>
           </form>
         </Modal>
