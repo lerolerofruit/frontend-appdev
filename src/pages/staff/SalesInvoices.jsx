@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSalesInvoices, createSalesInvoice, getSalesInvoice, sendSalesInvoiceEmail } from '../../api/invoices';
+import { getSalesInvoices, createSalesInvoice, getSalesInvoice, sendSalesInvoiceEmail, deleteSalesInvoice } from '../../api/invoices';
 import { searchCustomers } from '../../api/customers';
 import { getParts } from '../../api/parts';
 import Modal from '../../components/Modal';
@@ -46,7 +46,11 @@ export default function SalesInvoices() {
   const addItem = () => setForm({ ...form, items: [...form.items, { vehiclePartId: '', quantity: 1, discount: 0 }] });
   const removeItem = (i) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) });
   const setItem = (i, k, v) => {
-    const items = [...form.items]; items[i] = { ...items[i], [k]: v }; setForm({ ...form, items });
+    const items = [...form.items];
+    // keep vehiclePartId as the GUID string from the select
+    const value = v;
+    items[i] = { ...items[i], [k]: value };
+    setForm({ ...form, items });
   };
 
   const handleCreate = async (e) => {
@@ -122,6 +126,10 @@ export default function SalesInvoices() {
                           setEmailMessage(err.response?.data || err.message || 'Failed to send email.');
                         } finally { setEmailingId(null); }
                       }} title="Send invoice by email" className="p-1.5 hover:bg-gray-100 rounded-lg"><FileText size={14} className="text-gray-500" /></button>
+                      <button onClick={async () => {
+                        if (!confirm('Delete this sales invoice? This action cannot be undone.')) return;
+                        try { await deleteSalesInvoice(inv.id); await load(); } catch (err) { alert(err.response?.data || err.message || 'Failed to delete invoice.'); }
+                      }} className="p-1.5 hover:bg-red-50 rounded-lg"><Trash2 size={14} className="text-red-500" /></button>
                     </div>
                   </td>
                 </tr>

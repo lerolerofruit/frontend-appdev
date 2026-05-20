@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPurchaseInvoices, createPurchaseInvoice, getPurchaseInvoice } from '../../api/invoices';
+import { getPurchaseInvoices, createPurchaseInvoice, getPurchaseInvoice, deletePurchaseInvoice } from '../../api/invoices';
 import { getVendors } from '../../api/vendors';
 import { getParts } from '../../api/parts';
 import Modal from '../../components/Modal';
@@ -32,9 +32,11 @@ export default function PurchaseInvoices() {
   const removeItem = (i) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) });
   const setItem = (i, k, v) => {
     const items = [...form.items];
-    items[i] = { ...items[i], [k]: v };
+    // keep vehiclePartId as the GUID string (select returns a string)
+    const value = v;
+    items[i] = { ...items[i], [k]: value };
     if (k === 'vehiclePartId') {
-      const part = parts.find(p => p.id === v);
+      const part = parts.find(p => p.id === value);
       if (part) items[i].unitCost = part.unitPrice;
     }
     setForm({ ...form, items });
@@ -93,7 +95,13 @@ export default function PurchaseInvoices() {
                   <td className="td">{new Date(inv.invoiceDate).toLocaleDateString()}</td>
                   <td className="td font-semibold">Rs. {inv.totalAmount?.toLocaleString()}</td>
                   <td className="td">
-                    <button onClick={() => viewDetail(inv.id)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Eye size={14} className="text-gray-500" /></button>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => viewDetail(inv.id)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Eye size={14} className="text-gray-500" /></button>
+                      <button onClick={async () => {
+                        if (!confirm('Delete this purchase invoice? This action cannot be undone.')) return;
+                        try { await deletePurchaseInvoice(inv.id); await load(); } catch (err) { alert(err.response?.data || err.message || 'Failed to delete invoice.'); }
+                      }} className="p-1.5 hover:bg-red-50 rounded-lg"><Trash2 size={14} className="text-red-500" /></button>
+                    </div>
                   </td>
                 </tr>
               ))}
