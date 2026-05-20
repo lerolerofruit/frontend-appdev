@@ -58,10 +58,17 @@ export default function SalesInvoices() {
     if (!selectedCustomer) { setError('Please select a customer.'); return; }
     setSaving(true); setError('');
     try {
+      // Convert datetime-local strings to ISO 8601 format
+      const convertDateToISO = (dateStr) => {
+        if (!dateStr) return null;
+        // datetime-local format: "2026-05-21T10:00" -> ISO: "2026-05-21T10:00:00Z"
+        return dateStr.includes('T') ? `${dateStr}:00Z` : null;
+      };
+      
       const payload = {
-        invoiceNumber: form.invoiceNumber, customerId: selectedCustomer.id,
-        isCreditSale: form.isCreditSale, invoiceDate: form.invoiceDate || null,
-        creditDueDate: form.isCreditSale && form.creditDueDate ? form.creditDueDate : null,
+        invoiceNumber: form.invoiceNumber, customerId: selectedCustomer.customerId,
+        isCreditSale: form.isCreditSale, invoiceDate: convertDateToISO(form.invoiceDate),
+        creditDueDate: form.isCreditSale && form.creditDueDate ? convertDateToISO(form.creditDueDate) : null,
         items: form.items.map(it => ({ vehiclePartId: it.vehiclePartId, quantity: parseInt(it.quantity), discount: parseFloat(it.discount || 0) }))
       };
       await createSalesInvoice(payload); await load(); setModal(null); setSelectedCustomer(null);
@@ -75,11 +82,28 @@ export default function SalesInvoices() {
 
   // Invoice email sending removed for Milestone 1
 
-  const total = form.items.reduce((s, it) => {
+  // Calculate subtotal (before any discounts)
+  const subtotal = form.items.reduce((s, it) => {
     const part = parts.find(p => p.id === it.vehiclePartId);
     if (!part) return s;
-    return s + (part.unitPrice * parseInt(it.quantity || 1)) * (1 - parseFloat(it.discount || 0) / 100);
+    return s + (part.unitPrice * parseInt(it.quantity || 1));
   }, 0);
+
+  // Calculate manual discount (sum of all item-level discounts)
+  const manualDiscount = form.items.reduce((s, it) => {
+    const part = parts.find(p => p.id === it.vehiclePartId);
+    if (!part) return s;
+    return s + (part.unitPrice * parseInt(it.quantity || 1) * (parseFloat(it.discount || 0) / 100));
+  }, 0);
+
+  // Calculate subtotal after manual discount
+  const subtotalAfterManualDiscount = subtotal - manualDiscount;
+
+  // Calculate loyalty discount (10% when subtotal > 5000)
+  const loyaltyDiscount = subtotalAfterManualDiscount > 5000 ? subtotalAfterManualDiscount * 0.1 : 0;
+
+  // Final total
+  const total = subtotalAfterManualDiscount - loyaltyDiscount;
 
   return (
     <div>
@@ -171,7 +195,7 @@ export default function SalesInvoices() {
                   {customerResults.length > 0 && (
                     <div className="border border-gray-100 rounded-xl overflow-hidden">
                       {customerResults.map(c => (
-                        <button key={c.id} type="button" onClick={() => { setSelectedCustomer(c); setCustomerResults([]); }} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm border-b border-gray-50 last:border-0">
+                        <button key={c.customerId} type="button" onClick={() => { setSelectedCustomer(c); setCustomerResults([]); }} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm border-b border-gray-50 last:border-0">
                           <span className="font-medium text-gray-900">{c.fullName}</span>
                           <span className="ml-2 text-gray-400">{c.email}</span>
                         </button>
@@ -220,11 +244,11 @@ export default function SalesInvoices() {
                   );
                 })}
               </div>
-              <div className="mt-3 text-right text-sm font-bold text-gray-900">Total: Rs. {total.toFixed(2)}</div>
-              {/** Loyalty discount display */}
-              <div className="mt-2 text-right text-sm text-gray-700">Subtotal: Rs. {total.toFixed(2)}</div>
-              <div className="mt-1 text-right text-sm text-gray-700">Discount: Rs. {(total > 5000 ? (total * 0.1) : 0).toFixed(2)}</div>
-              <div className="mt-1 text-right text-sm font-bold text-gray-900">Final total: Rs. {(total > 5000 ? (total * 0.9) : total).toFixed(2)}</div>
+              <div className="mt-3 text-right text-sm font-bold text-gray-900">Subtotal: Rs. {subtotal.toFixed(2)}</div>
+              {manualDiscount > 0 && <div className="mt-1 text-right text-sm text-red-600">Manual Discount: -Rs. {manualDiscount.toFixed(2)}</div>}
+              {loyaltyDiscount > 0 && <div className="mt-1 text-right text-sm text-red-600">Loyalty Discount (10%): -Rs. {loyaltyDiscount.toFixed(2)}</div>}
+              <div className="mt-2 text-right text-sm font-bold text-gray-900">Total Discount: Rs. {(manualDiscount + loyaltyDiscount).toFixed(2)}</div>
+              <div className="mt-2 text-right text-sm font-bold text-gray-900">Final total: Rs. {total.toFixed(2)}</div>
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
