@@ -64,6 +64,10 @@ export default function Register() {
             Already have an account?{' '}
             <Link to="/login" className="font-semibold" style={{ color: '#0d9488' }}>Sign in</Link>
           </p>
+          <p className="text-center text-xs text-slate-500 mt-2">
+            Browse customer stories in{' '}
+            <Link to="/reviews" className="font-semibold" style={{ color: '#0d9488' }}>public reviews</Link>
+          </p>
         </div>
       </div>
     </div>

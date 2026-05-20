@@ -81,6 +81,13 @@ export default function Login() {
               Create account
             </Link>
           </p>
+
+          <p className="text-center text-xs text-slate-500 mt-2">
+            Read recent feedback in{' '}
+            <Link to="/reviews" className="font-semibold" style={{ color: '#0d9488' }}>
+              public reviews
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -25,6 +25,8 @@ import CustomerDashboard from './pages/customer/Dashboard';
 import Vehicles from './pages/customer/Vehicles';
 import Appointments from './pages/customer/Appointments';
 import PartRequests from './pages/customer/PartRequests';
+import CustomerReviews from './pages/customer/Reviews';
+import PublicReviews from './pages/public/PublicReviews';
 
 function ProtectedRoute({ children, roles }) {
   const { user, isLoggedIn } = useAuth();
@@ -48,6 +50,7 @@ export default function App() {
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/reviews" element={<PublicReviews />} />
 
           <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/parts" element={<ProtectedRoute roles={['Admin']}><Parts /></ProtectedRoute>} />
@@ -70,6 +73,7 @@ export default function App() {
           <Route path="/customer/vehicles" element={<ProtectedRoute roles={['Customer']}><Vehicles /></ProtectedRoute>} />
           <Route path="/customer/appointments" element={<ProtectedRoute roles={['Customer']}><Appointments /></ProtectedRoute>} />
           <Route path="/customer/part-requests" element={<ProtectedRoute roles={['Customer']}><PartRequests /></ProtectedRoute>} />
+          <Route path="/customer/reviews" element={<ProtectedRoute roles={['Customer']}><CustomerReviews /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

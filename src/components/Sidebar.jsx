@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Package, Building2, FileText, Users,
-  Calendar, LogOut, Wrench, BarChart3, Inbox, Bell
+  Calendar, LogOut, Wrench, BarChart3, Inbox, Bell, MessageSquare
 } from 'lucide-react';
 
 const adminLinks = [
@@ -28,6 +28,7 @@ const customerLinks = [
   { to: '/customer', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/customer/vehicles', label: 'My Vehicles', icon: Wrench },
   { to: '/customer/appointments', label: 'Appointments', icon: Calendar },
+  { to: '/customer/reviews', label: 'My Reviews', icon: MessageSquare },
   { to: '/customer/part-requests', label: 'Request Parts', icon: Inbox },
 ];
 const roleLinks = { Admin: adminLinks, Staff: staffLinks, Customer: customerLinks };
