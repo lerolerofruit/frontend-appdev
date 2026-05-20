@@ -73,29 +73,29 @@ export default function Parts() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Parts</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Parts</h1>
+          <p className="text-slate-600 mt-1">Manage inventory and vehicle parts</p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Add Part
+        <button onClick={openCreate} className="btn-primary flex items-center gap-2 flex-shrink-0">
+          <Plus size={18} strokeWidth={2.5} /> Add Part
         </button>
       </div>
 
       <div className="card">
         <div className="relative mb-5">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={1.5} />
           <input className="input pl-9" placeholder="Search parts…" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         {loading ? (
-          <div className="py-10 text-center text-gray-400 text-sm">Loading…</div>
+          <div className="py-10 text-center text-slate-400 text-sm">Loading…</div>
         ) : filtered.length === 0 ? (
           <EmptyState icon={Package} title="No parts found" description="Add your first part to get started." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 rounded-xl">
+              <thead className="bg-slate-50">
                 <tr>
                   <th className="th">Part #</th><th className="th">Name</th><th className="th">Vendor</th>
                   <th className="th">Price</th><th className="th">Stock</th><th className="th">Reorder</th>

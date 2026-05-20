@@ -37,7 +37,10 @@ export default function Notifications() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-900 mb-6">Notifications</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Notifications</h1>
+        <p className="text-slate-600 mt-1">View system alerts and messages</p>
+      </div>
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">

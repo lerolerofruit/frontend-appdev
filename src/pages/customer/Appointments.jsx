@@ -42,13 +42,13 @@ export default function Appointments() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Appointments</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Appointments</h1>
+          <p className="text-slate-600 mt-1">Schedule and manage service appointments</p>
         </div>
-        <button onClick={() => { setForm({ vehicleId: '', appointmentDate: '', serviceType: '', notes: '' }); setError(''); setModal(true); }} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Book Appointment
+        <button onClick={() => { setForm({ vehicleId: '', appointmentDate: '', serviceType: '', notes: '' }); setError(''); setModal(true); }} className="btn-primary flex items-center gap-2 flex-shrink-0">
+          <Plus size={18} strokeWidth={2.5} /> Book Appointment
         </button>
       </div>
 

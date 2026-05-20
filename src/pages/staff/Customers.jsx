@@ -77,13 +77,13 @@ export default function StaffCustomers() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Customers</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Customers</h1>
+          <p className="text-slate-600 mt-1">Manage customer information and records</p>
         </div>
-        <button onClick={() => { setForm(emptyForm); setError(''); setModal('register'); }} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Register Customer
+        <button onClick={() => { setForm(emptyForm); setError(''); setModal('register'); }} className="btn-primary flex items-center gap-2 flex-shrink-0">
+          <Plus size={18} strokeWidth={2.5} /> Register Customer
         </button>
       </div>
 

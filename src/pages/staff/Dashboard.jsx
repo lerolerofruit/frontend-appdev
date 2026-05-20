@@ -24,31 +24,32 @@ export default function StaffDashboard() {
 
   return (
     <div>
-      <div className="mb-7">
-        <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-slate-600 mt-1">Track your sales invoices and customer activity</p>
       </div>
 
       {loading ? (
         <div className="py-10 text-center text-sm text-slate-400">Loading…</div>
       ) : (
         <>
-          <div className="grid grid-cols-2 xl:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
             <StatCard label="Total Invoices" value={stats.invoices} icon={FileText} color="teal" />
             <StatCard label="Today's Invoices" value={stats.todayInvoices} icon={TrendingUp} color="cyan" />
           </div>
 
-          <div className="mt-4 card">
+          <div className="card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
-                  <BarChart3 size={18} className="text-teal-600" />
+                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
+                  <BarChart3 size={22} className="text-slate-600" strokeWidth={1.5} />
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">Customer Reports</p>
-                  <p className="text-sm text-slate-500">Regular customers, high spenders, and pending credits</p>
+                  <p className="text-sm text-slate-500">View regular customers, high spenders, and pending credits</p>
                 </div>
               </div>
-              <Link to="/staff/customer-reports" className="btn-primary">Open Reports</Link>
+              <Link to="/staff/customer-reports" className="btn-primary flex-shrink-0">View Reports</Link>
             </div>
           </div>
         </>

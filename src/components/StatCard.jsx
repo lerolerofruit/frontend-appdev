@@ -1,27 +1,27 @@
 const palettes = {
-  teal:   { bg: 'linear-gradient(135deg,#ccfbf1,#99f6e4)', icon: '#0d9488', text: '#0f766e' },
-  emerald:{ bg: 'linear-gradient(135deg,#d1fae5,#a7f3d0)', icon: '#059669', text: '#047857' },
-  cyan:   { bg: 'linear-gradient(135deg,#cffafe,#a5f3fc)', icon: '#0891b2', text: '#0e7490' },
-  amber:  { bg: 'linear-gradient(135deg,#fef9c3,#fef08a)', icon: '#d97706', text: '#b45309' },
-  rose:   { bg: 'linear-gradient(135deg,#ffe4e6,#fecdd3)', icon: '#e11d48', text: '#be123c' },
-  violet: { bg: 'linear-gradient(135deg,#ede9fe,#ddd6fe)', icon: '#7c3aed', text: '#6d28d9' },
-  sky:    { bg: 'linear-gradient(135deg,#e0f2fe,#bae6fd)', icon: '#0284c7', text: '#0369a1' },
-  indigo: { bg: 'linear-gradient(135deg,#e0e7ff,#c7d2fe)', icon: '#4f46e5', text: '#4338ca' },
+  teal:   { bg: '#f0fdfa', icon: '#0f766e', text: '#0f766e' },
+  emerald:{ bg: '#f0fdf4', icon: '#15803d', text: '#15803d' },
+  cyan:   { bg: '#f0f9fc', icon: '#0c4a6e', text: '#0c4a6e' },
+  amber:  { bg: '#fffbeb', icon: '#92400e', text: '#92400e' },
+  rose:   { bg: '#fff1f2', icon: '#be123c', text: '#be123c' },
+  violet: { bg: '#f5f3ff', icon: '#6d28d9', text: '#6d28d9' },
+  sky:    { bg: '#f0f9fc', icon: '#0c4a6e', text: '#0c4a6e' },
+  indigo: { bg: '#eef2ff', icon: '#3730a3', text: '#3730a3' },
 };
 
 export default function StatCard({ label, value, icon: Icon, color = 'teal', sub }) {
   const p = palettes[color] || palettes.teal;
   return (
     <div className="card-hover">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div style={{ background: p.bg }}
-          className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
-          <Icon size={22} style={{ color: p.icon }} />
+          className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+          <Icon size={20} style={{ color: p.icon }} strokeWidth={2.5} />
         </div>
-        <div>
-          <p className="text-2xl font-bold" style={{ color: '#0f172a' }}>{value}</p>
-          <p className="text-sm" style={{ color: '#64748b' }}>{label}</p>
-          {sub && <p className="text-xs mt-0.5" style={{ color: p.text }}>{sub}</p>}
+        <div className="flex-1 min-w-0">
+          <p className="text-2xl font-bold text-slate-900">{value}</p>
+          <p className="text-sm text-slate-600 mt-0.5">{label}</p>
+          {sub && <p className="text-xs mt-1 text-slate-500">{sub}</p>}
         </div>
       </div>
     </div>

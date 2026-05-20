@@ -94,8 +94,9 @@ export default function ManagePartRequests() {
 
   return (
     <div>
-      <div className="mb-7">
-        <h1 className="text-xl font-bold text-slate-900">Manage Part Requests</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Manage Part Requests</h1>
+        <p className="text-slate-600 mt-1">Review and approve part requests from customers</p>
       </div>
 
       {error && (

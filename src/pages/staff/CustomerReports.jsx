@@ -76,9 +76,12 @@ export default function CustomerReports() {
 
   return (
     <div>
-      <div className="mb-7 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-900">Customer Reports</h1>
-        <button onClick={load} className="btn-secondary">Refresh</button>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Customer Reports</h1>
+          <p className="text-slate-600 mt-1">Analyze customer engagement and spending patterns</p>
+        </div>
+        <button onClick={load} className="btn-secondary flex-shrink-0">Refresh</button>
       </div>
 
       {error && (

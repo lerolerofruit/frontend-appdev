@@ -107,16 +107,16 @@ export default function SalesInvoices() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Sales Invoices</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Sales Invoices</h1>
+          <p className="text-slate-600 mt-1">View and manage all sales invoices</p>
         </div>
         <button onClick={() => {
           setForm({ invoiceNumber: '', isCreditSale: false, creditDueDate: '', invoiceDate: '', items: [{ vehiclePartId: '', quantity: 1, discount: 0 }] });
           setSelectedCustomer(null); setCustomerSearch(''); setCustomerResults([]); setError(''); setModal('create');
-        }} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> New Invoice
+        }} className="btn-primary flex items-center gap-2 flex-shrink-0">
+          <Plus size={18} strokeWidth={2.5} /> New Invoice
         </button>
       </div>
 

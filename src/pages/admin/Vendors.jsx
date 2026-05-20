@@ -40,13 +40,13 @@ export default function Vendors() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Vendors</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Vendors</h1>
+          <p className="text-slate-600 mt-1">Manage supplier and vendor information</p>
         </div>
-        <button onClick={openCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Add Vendor
+        <button onClick={openCreate} className="btn-primary flex items-center gap-2 flex-shrink-0">
+          <Plus size={18} strokeWidth={2.5} /> Add Vendor
         </button>
       </div>
 

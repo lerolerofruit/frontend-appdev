@@ -109,8 +109,8 @@ export default function SalesInvoices() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Sales Invoices</h1>
-          
+          <h1 className="text-3xl font-bold text-slate-900">Sales Invoices</h1>
+          <p className="text-slate-600 mt-1">Create and track customer sales invoices</p>
         </div>
         <button onClick={() => {
           setForm({ invoiceNumber: '', isCreditSale: false, creditDueDate: '', invoiceDate: '', items: [{ vehiclePartId: '', quantity: 1, discount: 0 }] });
