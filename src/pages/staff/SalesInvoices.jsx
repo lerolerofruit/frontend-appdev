@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSalesInvoices, createSalesInvoice, getSalesInvoice } from '../../api/invoices';
+import { getSalesInvoices, createSalesInvoice, getSalesInvoice, sendSalesInvoiceEmail } from '../../api/invoices';
 import { searchCustomers } from '../../api/customers';
 import { getParts } from '../../api/parts';
 import Modal from '../../components/Modal';
@@ -16,6 +16,8 @@ export default function SalesInvoices() {
   const [detail, setDetail] = useState(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [emailingId, setEmailingId] = useState(null);
+  const [emailMessage, setEmailMessage] = useState('');
 
   const [customerSearch, setCustomerSearch] = useState('');
   const [customerResults, setCustomerResults] = useState([]);
@@ -111,7 +113,15 @@ export default function SalesInvoices() {
                   <td className="td">
                     <div className="flex items-center gap-1">
                       <button onClick={() => viewDetail(inv.id)} className="p-1.5 hover:bg-gray-100 rounded-lg"><Eye size={14} className="text-gray-500" /></button>
-                      {/* Email sending removed */}
+                      <button disabled={emailingId === inv.id} onClick={async () => {
+                        setEmailingId(inv.id); setEmailMessage('');
+                        try {
+                          await sendSalesInvoiceEmail(inv.id);
+                          setEmailMessage('Email sent successfully.');
+                        } catch (err) {
+                          setEmailMessage(err.response?.data || err.message || 'Failed to send email.');
+                        } finally { setEmailingId(null); }
+                      }} title="Send invoice by email" className="p-1.5 hover:bg-gray-100 rounded-lg"><FileText size={14} className="text-gray-500" /></button>
                     </div>
                   </td>
                 </tr>
@@ -203,6 +213,10 @@ export default function SalesInvoices() {
                 })}
               </div>
               <div className="mt-3 text-right text-sm font-bold text-gray-900">Total: Rs. {total.toFixed(2)}</div>
+              {/** Loyalty discount display */}
+              <div className="mt-2 text-right text-sm text-gray-700">Subtotal: Rs. {total.toFixed(2)}</div>
+              <div className="mt-1 text-right text-sm text-gray-700">Discount: Rs. {(total > 5000 ? (total * 0.1) : 0).toFixed(2)}</div>
+              <div className="mt-1 text-right text-sm font-bold text-gray-900">Final total: Rs. {(total > 5000 ? (total * 0.9) : total).toFixed(2)}</div>
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
@@ -216,10 +230,12 @@ export default function SalesInvoices() {
       {modal === 'detail' && detail && (
         <Modal title={`Invoice: ${detail.invoiceNumber}`} onClose={() => setModal(null)} size="lg">
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Customer:</span><span className="font-medium ml-1">{detail.customerName}</span></div>
               <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Date:</span><span className="font-medium ml-1">{new Date(detail.invoiceDate).toLocaleDateString()}</span></div>
               <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Total:</span><span className="font-bold ml-1 text-gray-900">Rs. {detail.totalAmount?.toLocaleString()}</span></div>
+              <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Subtotal:</span><span className="font-medium ml-1">Rs. {detail.subtotalAmount?.toLocaleString ? detail.subtotalAmount?.toLocaleString() : detail.subtotalAmount}</span></div>
+              <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Discount:</span><span className="font-medium ml-1">Rs. {detail.loyaltyDiscountAmount?.toLocaleString ? detail.loyaltyDiscountAmount?.toLocaleString() : detail.loyaltyDiscountAmount}</span></div>
               <div className="bg-gray-50 rounded-xl p-3"><span className="text-gray-500">Status:</span><span className={`ml-1 ${statusColors[detail.paymentStatus]}`}>{detail.paymentStatus}</span></div>
               {detail.isCreditSale && <div className="bg-amber-50 rounded-xl p-3 col-span-2"><span className="text-amber-600 font-medium">Credit Sale</span>{detail.creditDueDate && <span className="text-amber-500 ml-1 text-xs">— due {new Date(detail.creditDueDate).toLocaleDateString()}</span>}</div>}
             </div>
@@ -228,7 +244,7 @@ export default function SalesInvoices() {
               <tbody>
                 {detail.items?.map(item => (
                   <tr key={item.id} className="tr">
-                    <td className="td">{item.vehiclePartName || item.vehiclePartId}</td>
+                    <td className="td">{item.partName || item.vehiclePartId}</td>
                     <td className="td">{item.quantity}</td>
                     <td className="td">Rs. {item.unitPrice?.toLocaleString()}</td>
                     <td className="td">{item.discount}%</td>
@@ -237,6 +253,15 @@ export default function SalesInvoices() {
                 ))}
               </tbody>
             </table>
+            <div className="mt-3 flex items-center justify-end gap-3">
+              <button disabled={emailingId === detail.id} onClick={async () => {
+                setEmailingId(detail.id); setEmailMessage('');
+                try { await sendSalesInvoiceEmail(detail.id); setEmailMessage('Email sent successfully.'); }
+                catch (err) { setEmailMessage(err.response?.data || err.message || 'Failed to send email.'); }
+                finally { setEmailingId(null); }
+              }} className="btn-secondary">{emailingId === detail.id ? 'Sending…' : 'Send Email'}</button>
+              {emailMessage && <div className="text-sm text-gray-600">{emailMessage}</div>}
+            </div>
           </div>
         </Modal>
       )}
