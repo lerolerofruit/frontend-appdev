@@ -10,6 +10,7 @@ const adminLinks = [
   { to: '/admin/parts', label: 'Parts', icon: Package },
   { to: '/admin/vendors', label: 'Vendors', icon: Building2 },
   { to: '/admin/purchase-invoices', label: 'Purchase Invoices', icon: FileText },
+  { to: '/admin/sales-invoices', label: 'Sales Invoices', icon: FileText },
   { to: '/admin/staff', label: 'Staff', icon: Users },
   { to: '/admin/financial-reports', label: 'Financial Reports', icon: BarChart3 },
   { to: '/admin/notifications', label: 'Notifications', icon: Bell },

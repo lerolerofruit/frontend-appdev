@@ -9,6 +9,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import Parts from './pages/admin/Parts';
 import Vendors from './pages/admin/Vendors';
 import PurchaseInvoices from './pages/admin/PurchaseInvoices';
+import AdminSalesInvoices from './pages/admin/SalesInvoices';
 import Staff from './pages/admin/Staff';
 import FinancialReports from './pages/admin/FinancialReports';
 import ManagePartRequests from './pages/admin/ManagePartRequests';
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/admin/parts" element={<ProtectedRoute roles={['Admin']}><Parts /></ProtectedRoute>} />
           <Route path="/admin/vendors" element={<ProtectedRoute roles={['Admin']}><Vendors /></ProtectedRoute>} />
           <Route path="/admin/purchase-invoices" element={<ProtectedRoute roles={['Admin']}><PurchaseInvoices /></ProtectedRoute>} />
+          <Route path="/admin/sales-invoices" element={<ProtectedRoute roles={['Admin']}><AdminSalesInvoices /></ProtectedRoute>} />
           <Route path="/admin/staff" element={<ProtectedRoute roles={['Admin']}><Staff /></ProtectedRoute>} />
           <Route path="/admin/financial-reports" element={<ProtectedRoute roles={['Admin']}><FinancialReports /></ProtectedRoute>} />
           <Route path="/admin/notifications" element={<ProtectedRoute roles={['Admin']}><Notifications /></ProtectedRoute>} />
