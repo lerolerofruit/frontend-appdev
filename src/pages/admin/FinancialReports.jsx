@@ -88,27 +88,27 @@ export default function FinancialReports() {
           />
           <StatCard
             label="Sales Invoices"
-            value={report.numberOfSalesInvoices}
+            value={report.numberOfSalesInvoices ?? report.totalSalesInvoices ?? 0}
             icon={FileText}
             color="violet"
-            sub={`${report.numberOfSalesInvoices} invoices`}
+            sub={`${report.numberOfSalesInvoices ?? report.totalSalesInvoices ?? 0} invoices`}
           />
           <StatCard
             label="Purchase Invoices"
-            value={report.numberOfPurchaseInvoices}
+            value={report.numberOfPurchaseInvoices ?? report.totalPurchaseInvoices ?? 0}
             icon={FileText}
             color="rose"
-            sub={`${report.numberOfPurchaseInvoices} invoices`}
+            sub={`${report.numberOfPurchaseInvoices ?? report.totalPurchaseInvoices ?? 0} invoices`}
           />
           <StatCard
             label="Paid Amount"
-            value={formatCurrency(report.paidSalesAmount)}
+            value={formatCurrency(report.paidSalesAmount ?? report.paidSalesAmount ?? report.paidSalesAmount)}
             icon={CreditCard}
             color="teal"
           />
           <StatCard
             label="Pending/Credit Amount"
-            value={formatCurrency(report.pendingSalesAmount)}
+            value={formatCurrency(report.pendingSalesAmount ?? report.pendingCreditSalesAmount ?? report.pendingCreditSalesAmount)}
             icon={CreditCard}
             color="cyan"
           />
